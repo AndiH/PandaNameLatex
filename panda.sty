@@ -1,0 +1,102 @@
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{panda}[2014/07/14 PANDAs Name with Style]
+
+% INFO:
+% Prints the PANDA experiment's name with a well-looking bar on top of the P
+% Works for bold-faced as well italic (slanted)-faced type faces
+% 
+% Created by Andreas Herten, 2014-07-10
+% Based on code provided by Enrico Gregorio (egreg) at StackExchange (http://tex.stackexchange.com/a/188725/56326)
+%
+%
+% USAGE:
+%     Put \usepackage{panda} in your preamble
+%     A new \panda command is provided to give the wished overlined result (if it's actually not the wished result, take a look at the package options and additional features). 
+%
+%
+% OPTIONS:
+%     \usepackage[scaledistance=2]{panda} will double the vertical default distance between the bar and the upper edge of the P. Floating point values welcome.
+%     \usepackage[scaleregular=2]{panda} will double the thickness of the bar of regular-faced fonts
+%     \usepackage[scalebold=2]{panda} will double the amount of thickness added to the bar when used in a bold-faced font
+%
+%
+% ADDITIONAL FEATURES:
+%     If the bar over the P leads to a not-perfect result with your type face (e.g. with your favorite sans serif font), you can change the position of the left start and the right end of the bar, respectively, with the following command
+%     \makeatletter
+%     \setlength{\panda@additionalleftkerning}{0.05em}
+%     \setlength{\panda@additionalrightkerning}{-0.02em}
+%     \makeatother
+%
+%     You can always change it back with
+%     \setlength{\panda@additionalleftkerning}{0em}
+
+
+\RequirePackage{kvoptions}  % for retrieving package options
+\RequirePackage{fp}  % for floating point calculations
+
+\DeclareStringOption[1.0]{scaledistance}[1.0]
+\DeclareStringOption[1.0]{scalebold}[1.0]
+\DeclareStringOption[1.0]{scaleregular}[1.0]
+\ProcessKeyvalOptions*
+
+% All of the following three blocks will scale the default values by their respective package options parameters
+% Unfortunately, the setlength does not work - the values get computed without knowledge of the surround font size
+\def\panda@defaultbarthickness{0.04}
+\FPmul\panda@actualbarthickness{\panda@scaleregular}{\panda@defaultbarthickness}
+% \newlength{\panda@barthickness}
+% \setlength{\panda@barthickness}{\dimexpr(\panda@actualbarthickness em)}
+
+\def\panda@defaultdistance{0.23}
+\FPmul\panda@actualdistance{\panda@scaledistance}{\panda@defaultdistance}
+% \newlength{\panda@bardistance}
+% \setlength{\panda@bardistance}{\panda@actualdistance ex}
+
+\def\panda@defaultboldaddition{0.02}
+\FPmul\panda@actualboldaddition{\panda@scalebold}{\panda@defaultboldaddition}
+% \newlength{\panda@barboldness}
+% \setlength{\panda@barboldness}{\panda@actualboldaddition em}
+
+% If the bar on top of the P of your type face (eg a sans-serif type face) does start a bit too early (or late), you can change it with this (negative) parameter
+\newlength{\panda@additionalleftkerning}
+\setlength{\panda@additionalleftkerning}{0 em}
+% If the bar on top of the P of your type face (eg a sans-serif type face) does end a bit too late (or early), you can change it with this (negative) parameter
+\newlength{\panda@additionalrightkerning}
+\setlength{\panda@additionalrightkerning}{0 em}
+
+% all below is egreg's code, plus the scaling additions from above
+\DeclareRobustCommand{\panda}{\oP ANDA}
+
+\newcommand{\oP}{%
+  \leavevmode
+  \vbox{\offinterlineskip
+    \edef\panda@slant{\strip@pt\fontdimen1\font}%
+    \halign{%
+      ##\cr
+      \kern\panda@slant\fontcharht\font`P
+      \kern\dimexpr(.031em+\panda@additionalleftkerning) % start a bit to the right
+      \edef\sfdefault{\sfdefault}%
+      \ifx\f@family\sfdefault \kern.055em\fi % some more kerning for sans serif
+      \leaders\hrule height \pandarulewidth\hfill % the rule
+      \kern\dimexpr(.1em+\panda@additionalrightkerning) % stop a bit to the left
+      \kern-\fontcharic\font`P
+      \cr
+      \noalign{\vskip\panda@bardistance}
+      P\cr
+    }%
+  }%
+  \sbox\z@{P\kern0ptA}%
+  \sbox\tw@{PA}%
+  \dimen\z@=\wd\tw@
+  \advance\dimen\z@ -\wd\z@
+  \kern\dimen\z@ % the kern between P and A
+}
+\def\pandarulewidth{%
+  \dimexpr(\panda@barthickness+\panda@add)\relax
+}
+\def\panda@add{\expandafter\panda@check@b\f@series b.\@nil}
+\def\panda@check@b#1b#2\@nil{\if.#2\dimexpr0em\else\panda@barboldness\fi} % adjust at will
+\def\panda@barthickness{\dimexpr(\panda@actualbarthickness em)}
+\def\panda@bardistance{\dimexpr(\panda@actualdistance ex)}
+\def\panda@barboldness{\dimexpr(\panda@actualboldaddition em)}
+
+\endinput
