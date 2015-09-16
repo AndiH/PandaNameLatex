@@ -8,12 +8,12 @@ While this surely is quite clever, it's also super hard to type in documents. Th
 
 The Anti-P in this package is typeset using features of the original P of the currently chosen font face. It also automatically adapts to bold or italic font. Great, right? The bar is slightly longer than the `\bar` and slightly shorter than `\overline`.
 
-![PANDA with P!](https://raw.githubusercontent.com/AndiH/PandaNameLatex/pandabar.png)
+![PANDA with P!](https://raw.githubusercontent.com/AndiH/PandaNameLatex/master/pandabar.png)
 To see it in action you can jump over to [ShareLaTeX](https://www.sharelatex.com/project/5437dda89196212f7b9c5332), as long the page is up…
 ## Usage
 ```LaTeX
 \usepackage{panda}
-
+% …
 \panda{}!
 And also \textbf{\panda}!
 ```
